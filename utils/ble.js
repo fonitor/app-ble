@@ -63,10 +63,7 @@ export default class Ble {
      */
     init() {
         // 打开蓝牙适配器
-        console.log('适配')
-        console.log(this.system)
         return new Promise((resolve, reject) => {
-
             // 读取蓝牙状态
             wx.getBluetoothAdapterState({
                 success: (res) => {
