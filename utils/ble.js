@@ -138,6 +138,7 @@ export default class Ble {
                     resolve(res)
                 },
                 fail: (res) => {
+                    // 如果是安卓手机可能会有连接不上情况 需要增加重连机制
                     res.errMsg = "连接蓝牙错误"
                     reject(res)
                 }

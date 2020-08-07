@@ -11,7 +11,8 @@ Page({
 
   onShow() {},
 
-  searchBle() {
+  searchBle(e) {
+    console.log(e)
     // 初始化
     ble.openBluetoothAdapter().then(_ => {
       // 设备信息获取 ios 安卓逻辑不同
@@ -36,9 +37,9 @@ Page({
    */
   connectBle(e) {
     console.log('点击参数')
-    console.log(e)
-    let mac = '004E5B44-0EEE-3F57-D384-8821B4E81CE9'
-    ble.createBLEConnection(mac).then(res => {
+    console.log(e.currentTarget.dataset.deviceId)
+    let deviceId = '004E5B44-0EEE-3F57-D384-8821B4E81CE9'
+    ble.createBLEConnection(deviceId).then(res => {
       console.log('是否连接成功')
       console.log(res)
     })
