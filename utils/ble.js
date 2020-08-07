@@ -143,6 +143,7 @@ export default class Ble {
                 deviceId,
                 success: (res) => {
                     this.setDeviceInfo()
+                    this._deviceId = deviceId
                     resolve(res)
                 },
                 fail: (res) => {
@@ -184,7 +185,7 @@ export default class Ble {
         })
     }
 
-    writeBle(deviceId) {
+    writeBle() {
         console.log("crc16:", ToModbusCRC16('34438888020000', false))
         // 向蓝牙设备发送获取硬件信息协议
         // 34 43 88 88 02 00 00 4F 0A
@@ -207,7 +208,7 @@ export default class Ble {
 
         return new Promise((resolve, reject) => {
             wx.writeBLECharacteristicValue({
-                deviceId,
+                deviceId: this._deviceId,
                 serviceId: this.getServiceIdBySystem(this._serviceId),
                 characteristicId: this._characteristicsId,
                 value: buffer,
