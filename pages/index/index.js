@@ -6,7 +6,7 @@ Page({
     Bles: []
   },
   onLoad: function () {
-    this.$on('searchBle', this.getDevices)
+    
   },
 
   onShow() {},
@@ -16,11 +16,8 @@ Page({
     ble.openBluetoothAdapter().then(_ => {
       // 设备信息获取 ios 安卓逻辑不同
       ble.getPhoneInfo(() => {
-        
         // 蓝牙搜索
         ble.init().then(res => {
-          console.log('返回了嘛')
-          console.log(res)
           if (res.devices.length == 0) {
             return
           }
@@ -38,12 +35,5 @@ Page({
    * 连接蓝牙
    */
   connectBle() {
-    this.$emit('searchBle', {'ceshi': 1111})
   },
-
-  getDevices(devices) {
-    console.log('测试')
-    console.log(devices)
-    console.log(this.data)
-  }
 })
