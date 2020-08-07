@@ -4,6 +4,6 @@
   <button bindtap="connectBle">连接蓝牙</button>
   蓝牙连接列表
   <block wx:if="{{Bles.length != 0}}" wx:for="{{Bles}}" wx:key="id">
-    <view data-ble="{{item}}">{{item.name}}</view>
+    <view class="ble" data-ble="{{item}}">{{item.name}}--{{item.deviceId}}--{{item.RSSI}}</view>
   </block>
 </view>
