@@ -6,7 +6,7 @@ import extendMitt from './complex/extend-mitt.js'
 import extendPreload from './complex/extend-preload.js'
 import extendOData from './complex/extend-oData.js'
 
-import simplePv from './simple/extend_pv.js'
+// import simplePv from './simple/extend_pv.js'
 
 // 以mpExtend(...)的形式引入多个扩展
 // 如果不需要某一个混入项的功能，直接注释掉即可
@@ -16,7 +16,7 @@ mpExtend(extendMitt)
 mpExtend(extendPreload)
 mpExtend(extendOData)
 
-mpExtend(simplePv)
+// mpExtend(simplePv)
 
 export default {
     App: mpExtend.App,
