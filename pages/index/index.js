@@ -47,6 +47,13 @@ Page({
   },
 
   writeBleOne() {
-    ble.writeBle()
+    ble.writeBle().then(res => {
+      this.setData({
+        hardwareInfo: JSON.stringify(res)
+      })
+    }).catch(res => {
+      console.log('连接失败')
+      console.log(res)
+    })
   }
 })

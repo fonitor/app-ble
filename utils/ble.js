@@ -117,7 +117,7 @@ export default class Ble {
                     reject(res)
                 }
             })
-        }, 1000)
+        }, 500)
     }
 
     /**
@@ -142,6 +142,7 @@ export default class Ble {
             wx.createBLEConnection({
                 deviceId,
                 success: (res) => {
+                    this.setDeviceInfo()
                     resolve(res)
                 },
                 fail: (res) => {
@@ -150,6 +151,36 @@ export default class Ble {
                     reject(res)
                 }
             })
+        })
+    }
+
+    /**
+     * 获取设备serviceId
+     * 获取设备特征值
+     * @param {*} deviceId 
+     */
+    setDeviceInfo(deviceId) {
+        wx.getBLEDeviceServices({
+            deviceId,
+            success: (res) => {
+                console.log('getBLEDeviceServices success', res)
+                this._serviceId =  res.serviceId.uuid
+                let uuid = res.serviceId.uuid
+                // 获取特征UUID
+                setTimeout(() => {
+                    wx.getBLEDeviceCharacteristics({
+                        deviceId,
+                        serviceId: this.getServiceIdBySystem(uuid),
+                        success: (res) => {
+                            console.log('iOSGetBLEDeviceCharacteristics success', res.characteristics)
+                            this._characteristicsId = res.characteristics.uuid
+                        },
+                        fail: function (res) {
+                            reject(res);
+                        }
+                    })
+                }, 500)
+            }
         })
     }
 
@@ -177,10 +208,18 @@ export default class Ble {
         return new Promise((resolve, reject) => {
             wx.writeBLECharacteristicValue({
                 deviceId,
-                serviceId: this.getServiceIdBySystem(),
-                characteristicId: this._characteristicId,
+                serviceId: this.getServiceIdBySystem(this._serviceId),
+                characteristicId: this._characteristicsId,
                 value: buffer,
+                success: (res) => {
+                    resolve(res)
+                },
+                fail: (res) => {
+                    reject(res)
+                }
             })
+
+
 
         })
     }
@@ -188,8 +227,7 @@ export default class Ble {
     /**
      * 获取服务id
      */
-    getServiceIdBySystem() {
-        var id = "f000ffc0-dd84-ed9c-7bfe-8121e9b75f97"
+    getServiceIdBySystem(id) {
         if (this.system == "IOS") {
             // return "F000FFC0-DD84-ED9C-7BFE-8121E9B75F97";
             return id.toUpperCase()
