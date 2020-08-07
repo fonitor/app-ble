@@ -115,6 +115,37 @@ export default class Ble {
     }
 
     /**
+     * 停止搜索蓝牙
+     */
+    stopSearchDevices() {
+        wx.stopBluetoothDevicesDiscovery({
+            success: function (res) {
+                console.log("stopSearchDevices");
+            }
+        })
+    }
+
+    /**
+     * 连接蓝牙
+     * @param {*} deviceId 
+     */
+    createBLEConnection(deviceId) {
+        this.stopSearchDevices()
+        return new Promise((resolve, reject) => {
+            wx.createBLEConnection({
+                deviceId,
+                success: (res) => {
+                    resolve(res)
+                },
+                fail: (res) => {
+                    res.errMsg = "连接蓝牙错误"
+                    reject(res)
+                }
+            })
+        })
+    }
+
+    /**
      * 组装错误信息
      * @param {*} msg 
      */

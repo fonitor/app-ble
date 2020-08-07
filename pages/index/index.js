@@ -34,6 +34,13 @@ Page({
   /**
    * 连接蓝牙
    */
-  connectBle() {
+  connectBle(e) {
+    console.log('点击参数')
+    console.log(e)
+    let mac = '004E5B44-0EEE-3F57-D384-8821B4E81CE9'
+    ble.createBLEConnection(mac).then(res => {
+      console.log('是否连接成功')
+      console.log(res)
+    })
   },
 })
