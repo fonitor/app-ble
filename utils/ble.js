@@ -130,6 +130,7 @@ export default class Ble {
      * @param {*} deviceId 
      */
     createBLEConnection(deviceId) {
+        // 连接蓝牙可以停止搜索蓝牙设备
         this.stopSearchDevices()
         return new Promise((resolve, reject) => {
             wx.createBLEConnection({
