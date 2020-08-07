@@ -6,6 +6,42 @@ import {
 
 export default class Ble {
     constructor() {
+        this.setPhoneInfo()
+    }
+
+    /**
+     * 初始化蓝牙模块。iOS 上开启主机/从机模式时需分别调用一次，指定对应的 mode。
+     */
+    openBluetoothAdapter() {
+        return new Promise((resolve, reject) => {
+            wx.openBluetoothAdapter({
+                success: () => {
+                    resolve()
+                },
+                fail: () => {
+                    reject()
+                }
+            })
+        })
+    }
+
+    /**
+     * 获取设备信息
+     * @param {*} cal 
+     */
+    getPhoneInfo(cal) {
+        if (this.phoneInfo && this.system) {
+            cal()
+            return
+        }
+        this.setPhoneInfo(cal)
+    }
+
+    /**
+     * 存储手机信息
+     * @param {*} cal 
+     */
+    setPhoneInfo(cal) {
         getPhoneInfo((res) => {
             let phoneInfo = res,
                 system = res.system
@@ -15,13 +51,80 @@ export default class Ble {
             } else {
                 this.system = 'Android'
             }
+            if (cal) {
+                cal()
+            }
 
         })
     }
 
-    openBluetoothAdapter() {
-        console.log(this.phoneInfo)
+    /**
+     * 初始化蓝牙
+     */
+    init() {
+        // 打开蓝牙适配器
+        console.log('适配')
         console.log(this.system)
-        // return promisic(wx.openBluetoothAdapter)
+        return new Promise((resolve, reject) => {
+
+            // 读取蓝牙状态
+            wx.getBluetoothAdapterState({
+                success: (res) => {
+                    console.log('getBluetoothAdapterState success', res)
+                    if (!res.available) {
+                        reject(this.getErrorMessage('设备不可用'))
+                        return
+                    }
+                    wx.startBluetoothDevicesDiscovery({
+                        success: (res) => {
+                            // success
+                            console.log('startBluetoothDevicesDiscovery success', res)
+                            this.searchBle(resolve, reject)
+                        },
+                        fail: (res) => {
+                            res.errMsg = '搜索设备出错！'
+                            reject(res)
+                        }
+                    })
+
+                },
+                fail: (res) => {
+                    res.errMsg = '读取蓝牙状态失败'
+                    reject(res)
+                }
+            })
+        })
+    }
+
+    /**
+     * 搜索蓝牙设备搜索
+     * 初始化蓝牙搜索设备对于机型差延迟1s 调试更佳
+     * @param {*} resolve 
+     * @param {*} reject 
+     */
+    searchBle(resolve, reject) {
+        setTimeout(() => {
+            wx.getBluetoothDevices({
+                success: (res) => {
+                    console.log('搜索蓝牙', res)
+                    resolve(res)
+                },
+                fail: (res) => {
+                    res.errMsg = '搜索蓝牙出错！'
+                    reject(res)
+                }
+            })
+        }, 1000)
+    }
+
+    /**
+     * 组装错误信息
+     * @param {*} msg 
+     */
+    getErrorMessage(msg) {
+        return {
+            errMsg: msg
+        }
+
     }
 }

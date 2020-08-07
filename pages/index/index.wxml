@@ -1,4 +1,9 @@
 <!--index.wxml-->
 <view class="container">
   <button bindtap="searchBle">搜索蓝牙</button>
+  <button bindtap="searchBle">连接蓝牙</button>
+  蓝牙连接列表
+  <block>
+    <view wx:for="{{Bles}}" data-ble="{{item}}">{{item.name}}</view>
+  </block>
 </view>
