@@ -1,10 +1,18 @@
+import Ble from '../../utils/ble'
+let ble = new Ble()
+
 Page({
   data: {
   },
   onLoad: function () {
-    console.log('测试3')
   },
 
   onShow() {
+  },
+
+  searchBle() {
+    ble.openBluetoothAdapter().then(res => {
+      console.log(res)
+    })
   }
 })
