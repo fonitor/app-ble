@@ -3,6 +3,11 @@ import {
     getPhoneInfo
 } from './util'
 
+import {
+    ToModbusCRC16,
+    ab2hex
+} from './crc16'
+
 
 export default class Ble {
     constructor() {
@@ -30,7 +35,7 @@ export default class Ble {
      * @param {*} cal 
      */
     getPhoneInfo(cal) {
-        if (this.phoneInfo && this.system) {
+        if (this.phoneInfo) {
             cal()
             return
         }
@@ -46,6 +51,7 @@ export default class Ble {
             let phoneInfo = res,
                 system = res.system
             this.phoneInfo = phoneInfo
+            this.version = phoneInfo.version
             if (system.indexOf('iOS') >= 0) {
                 this.system = 'IOS'
             } else {
@@ -145,6 +151,74 @@ export default class Ble {
                 }
             })
         })
+    }
+
+    writeBle(deviceId) {
+        console.log("crc16:", ToModbusCRC16('34438888020000', false))
+        // 向蓝牙设备发送获取硬件信息协议
+        // 34 43 88 88 02 00 00 4F 0A
+        let buffer = new ArrayBuffer(9)
+        let dataView = new DataView(buffer)
+        // 写入协议头
+        dataView.setUint8(0, 0x34)
+        dataView.setUint8(1, 0x43)
+        dataView.setUint8(2, 0x88)
+        dataView.setUint8(3, 0x88)
+        // 写入协议类型
+        dataView.setUint8(4, 0x01)
+        // 写入负载长度
+        dataView.setUint16(5, 0x03)
+        // 由于获取硬件信息不需要业务数据，所以此协议不含业务数据体
+        // 写入两个字节的crc校验结果
+        dataView.setUint16(7, 0xB695)
+
+        console.log("number:", ab2hex(buffer))
+
+        return new Promise((resolve, reject) => {
+            wx.writeBLECharacteristicValue({
+                deviceId,
+                serviceId: this.getServiceIdBySystem(),
+                characteristicId: this._characteristicId,
+                value: buffer,
+            })
+
+        })
+    }
+
+    /**
+     * 获取服务id
+     */
+    getServiceIdBySystem() {
+        var id = "f000ffc0-dd84-ed9c-7bfe-8121e9b75f97"
+        if (this.system == "IOS") {
+            // return "F000FFC0-DD84-ED9C-7BFE-8121E9B75F97";
+            return id.toUpperCase()
+        } else { // 如果是安卓 在6.5.10版本之前服务uuid 必须大写
+            if (this.versionfunegt(edition, '6.5.10')) {
+                return id.toUpperCase()
+            }
+        }
+
+        return id
+    }
+
+    /**
+     * 版本号比较
+     * @param {*} version 
+     * @param {*} minVersion 
+     */
+    versionfunegt(version, minVersion) {
+        let original = version.split('.'),
+            min = minVersion.split('.')
+        if (parseInt(original[0]) > parseInt(min[0])) {
+            return true
+        } else if (parseInt(original[1]) > parseInt(min[1])) {
+            return true
+        } else if (parseInt(original[2]) >= parseInt(min[2])) {
+            return true
+        } else {
+            return false
+        }
     }
 
     /**

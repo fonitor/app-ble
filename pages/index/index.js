@@ -3,7 +3,8 @@ let ble = new Ble()
 
 Page({
   data: {
-    Bles: []
+    Bles: [],
+    hardwareInfo: null
   },
   onLoad: function () {
     
@@ -44,4 +45,8 @@ Page({
       console.log(res)
     })
   },
+
+  writeBleOne() {
+    ble.writeBle()
+  }
 })
