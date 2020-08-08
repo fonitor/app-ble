@@ -4,9 +4,6 @@
   <button bindtap="connectBle">连接蓝牙</button>
   <button bindtap="writeBleOne">获取硬件信息</button>
   <view wx:if="{{hardwareInfo}}">{{hardwareInfo}}</view>
-  <button bindtap="writeBleTwo">灯光写入2</button>
-  <button bindtap="writeBleThree">灯光写入3</button>
-  <button bindtap="writeBleFour">灯光写入4</button>
   <view wx:if="{{macs.length}}">
     <view>已连接蓝牙列表</view>
     <block wx:for="{{macs}}" wx:key="id">
