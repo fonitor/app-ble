@@ -11,6 +11,8 @@ import {
 
 export default class Ble {
     constructor() {
+        // 已连接的设备存储
+        this.contentBles = {}
         this.setPhoneInfo()
     }
 
@@ -142,8 +144,12 @@ export default class Ble {
             wx.createBLEConnection({
                 deviceId,
                 success: (res) => {
+                    if (!this.contentBles[deviceId]) {
+                        this.contentBles[deviceId] = {}
+                    }
+                    this.contentBles[deviceId].mac = deviceId
                     this.setDeviceInfo()
-                    this._deviceId = deviceId
+                    res.mac = deviceId
                     resolve(res)
                 },
                 fail: (res) => {
@@ -164,12 +170,12 @@ export default class Ble {
         wx.getBLEDeviceServices({
             deviceId,
             success: (res) => {
-                console.log('getBLEDeviceServices success', res)
-                this.services = res.services
+                // console.log('getBLEDeviceServices success', res)
+                this.contentBles[deviceId].serviceIds = res.services
                 let uuid = null
                 res.services.forEach((item) => {
                     if (item.isPrimary) {
-                        uuid = item.uuid
+                        this.contentBles[deviceId].serviceId = item.uuid
                     }
                 })
                 this._serviceId =  uuid
@@ -179,11 +185,11 @@ export default class Ble {
                         deviceId,
                         serviceId: this.getServiceIdBySystem(uuid),
                         success: (res) => {
-                            console.log('iOSGetBLEDeviceCharacteristics success', res.characteristics)
-                            this.characteristics = res.characteristics
+                            // console.log('iOSGetBLEDeviceCharacteristics success', res.characteristics)
+                            this.contentBles[deviceId].characteristics = res.characteristics
                             res.characteristics.forEach((item) => {
                                 if (!!item.properties && !!item.properties.write && item.properties.write) {
-                                    this._characteristicsId = item.uuid
+                                    this.contentBles[deviceId].characteristicWrite = item.uuid
                                 }
                             })
                         },
@@ -196,7 +202,11 @@ export default class Ble {
         })
     }
 
-    writeBle() {
+    /**
+     * 写入
+     * @param {*} deviceId 
+     */
+    writeBle(deviceId) {
         console.log("crc16:", ToModbusCRC16('34438888020000', false))
         // 向蓝牙设备发送获取硬件信息协议
         // 34 43 88 88 02 00 00 4F 0A
@@ -219,9 +229,9 @@ export default class Ble {
 
         return new Promise((resolve, reject) => {
             wx.writeBLECharacteristicValue({
-                deviceId: this._deviceId,
-                serviceId: this.getServiceIdBySystem(this._serviceId),
-                characteristicId: this._characteristicsId,
+                deviceId: this.contentBles[deviceId].mac,
+                serviceId: this.getServiceIdBySystem(this.contentBles[deviceId],serviceId),
+                characteristicId: this.contentBles[deviceId].characteristicWrite,
                 value: buffer,
                 success: (res) => {
                     resolve(res)

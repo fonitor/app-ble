@@ -7,6 +7,12 @@
   <button bindtap="writeBleTwo">灯光写入2</button>
   <button bindtap="writeBleThree">灯光写入3</button>
   <button bindtap="writeBleFour">灯光写入4</button>
+  <view wx:if="{{macs.length}}">
+    <view>已连接蓝牙列表</view>
+    <block wx:for="{{macs}}" wx:key="id">
+      <view>item</view>
+    </block>
+  </view>
   蓝牙连接列表
   <block wx:if="{{Bles.length != 0}}" wx:for="{{Bles}}" wx:key="id">
     <view bindtap="connectBle" class="ble" data-ble="{{item}}">{{item.name}}--{{item.deviceId}}--{{item.RSSI}}</view>
