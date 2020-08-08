@@ -165,8 +165,13 @@ export default class Ble {
             deviceId,
             success: (res) => {
                 console.log('getBLEDeviceServices success', res)
-                this._serviceId =  res.serviceId.uuid
-                let uuid = res.serviceId.uuid
+                let uuid = null
+                res.services.forEach((item) => {
+                    if (item.isPrimary) {
+                        uuid = item.uuid
+                    }
+                })
+                this._serviceId =  uuid
                 // 获取特征UUID
                 setTimeout(() => {
                     wx.getBLEDeviceCharacteristics({
@@ -174,7 +179,11 @@ export default class Ble {
                         serviceId: this.getServiceIdBySystem(uuid),
                         success: (res) => {
                             console.log('iOSGetBLEDeviceCharacteristics success', res.characteristics)
-                            this._characteristicsId = res.characteristics.uuid
+                            res.characteristics.forEach((item) => {
+                                if (!!item.properties && !!item.properties.write && item.properties.write) {
+                                    this._characteristicsId = item.uuid
+                                }
+                            })
                         },
                         fail: function (res) {
                             reject(res);
