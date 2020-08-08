@@ -10,7 +10,7 @@
   <view wx:if="{{macs.length}}">
     <view>已连接蓝牙列表</view>
     <block wx:for="{{macs}}" wx:key="id">
-      <view>item</view>
+      <view class="ble">{{item}}</view>
     </block>
   </view>
   蓝牙连接列表

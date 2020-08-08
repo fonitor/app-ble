@@ -47,6 +47,9 @@ Page({
       if (macs.indexOf(res.mac) == -1) {
         macs.push(res.mac)
       }
+      this.setData({
+        macs
+      })
       if (!this.data.mac) {
         this.data.mac = res.mac
       }
