@@ -165,6 +165,7 @@ export default class Ble {
             deviceId,
             success: (res) => {
                 console.log('getBLEDeviceServices success', res)
+                this.services = res.services
                 let uuid = null
                 res.services.forEach((item) => {
                     if (item.isPrimary) {
@@ -179,6 +180,7 @@ export default class Ble {
                         serviceId: this.getServiceIdBySystem(uuid),
                         success: (res) => {
                             console.log('iOSGetBLEDeviceCharacteristics success', res.characteristics)
+                            this.characteristics = res.characteristics
                             res.characteristics.forEach((item) => {
                                 if (!!item.properties && !!item.properties.write && item.properties.write) {
                                     this._characteristicsId = item.uuid
